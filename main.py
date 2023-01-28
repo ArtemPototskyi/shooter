@@ -17,6 +17,19 @@ clock = pygame.time.Clock()
 background = pygame.image.load(file_path("city_background.jpg"))
 background = pygame.transform.scale(background, (WIN_WIDTH, WIN_HEIGH))
 
+class GameSprite(pygame.sprite.Sprite):
+    def __init__(self, image, x, y, width, heigh, speed):
+        super().__init__()
+        self.image = pygame.image.load(file_path(image))
+        self.image = pygame.transform.scale(self.image, (width, heigh))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.speed = speed
+
+    def reset(self):
+        window.blit(self.image, (self.rect.x, self.rect.y))    
+        
 play = True
 game = True
 
