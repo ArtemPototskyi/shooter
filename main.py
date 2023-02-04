@@ -1,5 +1,6 @@
 import pygame
 import os
+from random import randint
 pygame.init()
 
 def file_path(file_name):
@@ -9,16 +10,16 @@ def file_path(file_name):
 
 FPS = 40
 WIN_WIDTH = 700
-WIN_HEIGH = 500
+WIN_HEIGHT = 500
 
-window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGH))
+window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 clock = pygame.time.Clock()
 
 background = pygame.image.load(file_path("city_background.jpg"))
-background = pygame.transform.scale(background, (WIN_WIDTH, WIN_HEIGH))
+background = pygame.transform.scale(background, (WIN_WIDTH, WIN_HEIGHT))
 
 class GameSprite(pygame.sprite.Sprite):
-    def __init__(self, image, x, y, width, heigh, speed):
+    def __init__(self, image, x, y, width, height, speed):
         super().__init__()
         self.image = pygame.image.load(file_path(image))
         self.image = pygame.transform.scale(self.image, (width, height))
@@ -30,19 +31,35 @@ class GameSprite(pygame.sprite.Sprite):
         window.blit(self.image, (self.rect.x, self.rect.y))    
 
 class Player(GameSprite):
-    def __init__(self, x, y, width, height, speed):
+    def __init__(self, image, x, y, width, height, speed):
         super().__init__(image, x, y, width, height, speed)
     def update(self):
         keys = pygame.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.rect.x -= self.speed
-        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.rect.x += self.speed
 
-    def fire():
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            self.rect.x -= self.speed
+    def fire(self):
         pass
 
-player = Player("bullet.png", 300, 400, 70, 70, 5)
+class Enemy(GameSprite):
+    def __init__(self, image, x, y, width, height, speed):
+        super().__init__(image, x, y, width, height, speed)
+
+    def update(self):
+        self.rect.y += self.speed
+        if self.rect.y >= WIN_HEIGHT:
+            self.rect.bottom = 0
+            self.rect.x = randint(0, WIN_WIDTH - self.rect.width)
+
+
+player = Player(file_path("spaceship_ally.png"), 300, 400, 70, 70, 5)
+enemies = pygame.sprite.Group()
+
+for i in range(5):
+    enemy = Enemy(file_path('ufo_enemy.png'), randint(0, WIN_WIDTH - 50), 0, 50, 50, 3)
+    enemies.add(enemy)
 
 play = True
 game = True
@@ -56,7 +73,11 @@ while game == True:
     if play == True:
         window.blit(background, (0, 0))
 
-        player.reset
+        player.reset()
+        player.update()
+
+        enmies.draw(window)
+        enemies.update()
 
     clock.tick(FPS)
     pygame.display.update()
